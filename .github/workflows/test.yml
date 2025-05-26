@@ -28,11 +28,12 @@ jobs:
         with:
           context: ./express-app
           push: true
-          tags: registry.heroku.com/${{secrets.HEROKU_APP_NAME}}/web
+          tags: registry.heroku.com/${{ secrets.HEROKU_APP_NAME }}/web
 
       - name: Release app on Heroku
         env:
           HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+          HEROKU_APP_NAME: ${{ secrets.HEROKU_APP_NAME }}
         run: |
           curl https://cli-assets.heroku.com/install.sh | sh
-          heroku container:release web --app ${{secrets.HEROKU_APP_NAME}}
+          heroku container:release web --app $HEROKU_APP_NAME
