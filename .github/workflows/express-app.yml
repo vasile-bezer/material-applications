@@ -1,22 +1,30 @@
-name: Deploy
+name: Deploy to Heroku (express-app)
 
 on:
   push:
-    branches:
-      - main
+    branches: ["main"]
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
+  deploy:
+    runs-on: "ubuntu-latest"
     steps:
-      - uses: actions/checkout@v2
-      - name: Install Heroku CLI # <- IMPORTANT!!! Make sure the cli is installed before using the action
-        run: |
-          curl https://cli-assets.heroku.com/install.sh | sh 
-      - uses: akhileshns/heroku-deploy@v3.14.15 # This is the action
+      - uses: actions/checkout@v4
+
+      - name: "Deploy the web dyno"
+        uses: "akhileshns/heroku-deploy@v3.12.12"
         with:
-          heroku_api_key: ${{secrets.HEROKU_API_KEY}}
-          heroku_app_name: ${{secrets.HEROKU_APP_NAME}} #Must be unique in Heroku
-          heroku_email: ${{secrets.HEROKU_EMAIL}}
+          docker_heroku_process_type: web
+          heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
+          heroku_app_name: ${{ secrets.HEROKU_APP_NAME }}
+          heroku_email: ${{ secrets.HEROKU_EMAIL }}
+          justlogin: true
           appdir: express-app
-          usedocker: true
+
+      - name: "Login to heroku registry"
+        run: heroku container:login
+
+      - name: "Build and push to heroku registry"
+        run: heroku container:push web --app email-service-web
+
+      - name: "Releases the container"
+        run: heroku container:release web --app email-service-web
