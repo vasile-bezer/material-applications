@@ -6,32 +6,25 @@ on:
 
 jobs:
   deploy:
-    runs-on: "ubuntu-latest"
+    runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
-        
+      - name: Checkout code
+        uses: actions/checkout@v4
+
       - name: Install Heroku CLI
         run: curl https://cli-assets.heroku.com/install.sh | sh
 
-      - name: "Deploy the web dyno"
-        uses: "akhileshns/heroku-deploy@v3.12.12"
+      - name: Set Heroku stack to container (only needed once)
+        run: heroku stack:set container --app ${{ secrets.HEROKU_APP_NAME }}
+
+      - name: Deploy with akhileshns/heroku-deploy
+        uses: akhileshns/heroku-deploy@v3.14.15
         with:
-          docker_heroku_process_type: web
           heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
           heroku_app_name: ${{ secrets.HEROKU_APP_NAME }}
           heroku_email: ${{ secrets.HEROKU_EMAIL }}
-          justlogin: true
-          appdir: express-app
           usedocker: true
+          appdir: express-app
+          docker_heroku_process_type: web
 
-      - name: "Login to heroku registry"
-        run: heroku container:login
-        
-      - name: Set Heroku app stack to container
-        run: heroku stack:set container --app ${{ secrets.HEROKU_APP_NAME }}
-
-      - name: "Build and push to heroku registry"
-        run: heroku container:push web --app ${{ secrets.HEROKU_APP_NAME }}
-
-      - name: "Releases the container"
-        run: heroku container:release web --app ${{ secrets.HEROKU_APP_NAME }}
