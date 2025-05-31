@@ -1,0 +1,1 @@
+sudo docker run -e DOCKER_USER= -e DOCKER_PWD= -v /var/run/docker.sock:/var/run/docker.sock builder mluukkai/express_app dockerhub-username/testing-dockerized
