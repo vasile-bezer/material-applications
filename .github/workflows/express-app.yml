@@ -22,6 +22,7 @@ jobs:
           heroku_email: ${{ secrets.HEROKU_EMAIL }}
           justlogin: true
           appdir: express-app
+          usedocker: true
 
       - name: "Login to heroku registry"
         run: heroku container:login
